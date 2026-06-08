@@ -1,0 +1,423 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres_app"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "showPoints": "never"
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres_app"
+          },
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT $__timeGroupAlias(event_time, '1m'), COUNT(*)::double precision AS events FROM observability.app_events WHERE $__timeFilter(event_time) GROUP BY 1 ORDER BY 1;",
+          "refId": "A"
+        }
+      ],
+      "title": "Eventos por minuto",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres_app"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 2
+              },
+              {
+                "color": "red",
+                "value": 5
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 12,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres_app"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT ROUND(COUNT(*) FILTER (WHERE status_code >= 500)::numeric * 100.0 / NULLIF(COUNT(*), 0), 2) AS error_rate_5xx FROM observability.app_events WHERE $__timeFilter(event_time);",
+          "refId": "A"
+        }
+      ],
+      "title": "Taxa de erro 5xx",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres_app"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres_app"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT ROUND(AVG(latency_ms)::numeric, 2) AS avg_latency_ms FROM observability.app_events WHERE $__timeFilter(event_time);",
+          "refId": "A"
+        }
+      ],
+      "title": "Latencia media",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres_app"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "showPoints": "never"
+          },
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres_app"
+          },
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT $__timeGroupAlias(event_time, '1m'), percentile_cont(0.95) WITHIN GROUP (ORDER BY latency_ms)::double precision AS p95_latency_ms FROM observability.app_events WHERE $__timeFilter(event_time) GROUP BY 1 ORDER BY 1;",
+          "refId": "A"
+        }
+      ],
+      "title": "Latencia p95 por minuto",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres_app"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "id": 5,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "orientation": "auto",
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres_app"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT event_type AS metric, COUNT(*)::double precision AS value FROM observability.app_events WHERE $__timeFilter(event_time) GROUP BY event_type ORDER BY value DESC;",
+          "refId": "A"
+        }
+      ],
+      "title": "Eventos por tipo",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres_app"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 16
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "orientation": "auto",
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres_app"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT event_type AS metric, COUNT(*)::double precision AS value FROM observability.app_events WHERE $__timeFilter(event_time) AND event_type IN ('search', 'contact_click') GROUP BY event_type ORDER BY event_type;",
+          "refId": "A"
+        }
+      ],
+      "title": "Search x Contact Click",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres_app"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 16
+      },
+      "id": 7,
+      "options": {
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres_app"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT endpoint, ROUND(AVG(latency_ms)::numeric, 2) AS avg_latency_ms, ROUND(percentile_cont(0.95) WITHIN GROUP (ORDER BY latency_ms)::numeric, 2) AS p95_latency_ms, COUNT(*) AS events FROM observability.app_events WHERE $__timeFilter(event_time) GROUP BY endpoint ORDER BY avg_latency_ms DESC LIMIT 5;",
+          "refId": "A"
+        }
+      ],
+      "title": "Top endpoints mais lentos",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres_app"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 16
+      },
+      "id": 8,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "orientation": "auto",
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres_app"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT endpoint AS metric, ROUND(COUNT(*) FILTER (WHERE status_code >= 500)::numeric * 100.0 / NULLIF(COUNT(*), 0), 2) AS error_rate_5xx FROM observability.app_events WHERE $__timeFilter(event_time) GROUP BY endpoint ORDER BY error_rate_5xx DESC, endpoint;",
+          "refId": "A"
+        }
+      ],
+      "title": "Taxa de erro por endpoint",
+      "type": "barchart"
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "style": "dark",
+  "tags": [
+    "observability",
+    "postgres",
+    "marketplace"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Application Observability Overview",
+  "uid": "application-observability-overview",
+  "version": 1,
+  "weekStart": ""
+}

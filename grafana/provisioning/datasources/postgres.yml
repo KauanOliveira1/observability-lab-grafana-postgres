@@ -1,0 +1,17 @@
+apiVersion: 1
+
+datasources:
+  - name: PostgreSQL Observability
+    uid: postgres_app
+    type: postgres
+    access: proxy
+    url: ${OBS_DB_HOST}:${OBS_DB_PORT}
+    user: ${OBS_DB_USER}
+    isDefault: true
+    jsonData:
+      database: ${OBS_DB_NAME}
+      sslmode: disable
+      postgresVersion: 1600
+      timescaledb: false
+    secureJsonData:
+      password: ${OBS_DB_PASSWORD}
