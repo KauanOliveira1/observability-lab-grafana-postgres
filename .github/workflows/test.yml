@@ -1,0 +1,17 @@
+name: DevLake Test Workflow
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run fake test
+        run: echo "DevLake test workflow executed successfully"
